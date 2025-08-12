@@ -221,7 +221,7 @@ test: добавлены тесты API
 ---
 
 ### 6. CI/CD
-
+# !!! Пока не настроено
 ``` bash
 # 6.1. Что такое CI/CD?
 CI (Continuous Integration) — автоматическая проверка кода (тесты, линтинг) при каждом PR и пуше.
@@ -281,3 +281,61 @@ git pull origin develop
 ![Запуск тестов](photo/about_tests.png)
 
 ---
+
+# CI/CD
+
+```bash
+5. CI/CD (GitHub Actions)
+Для бэкенда (Django)
+Создай .github/workflows/backend.yml:
+
+
+
+
+name: Backend CI
+
+on:
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run tests
+        run: python manage.py test
+
+
+
+
+
+Для фронтенда (Vue)
+Создай .github/workflows/frontend.yml:
+
+
+name: Frontend CI
+
+on:
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - run: cd frontend && npm install && npm run build
+```
