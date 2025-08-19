@@ -1,6 +1,5 @@
 # frontend
 
-утеук
 ## Project setup
 ```
 npm install
