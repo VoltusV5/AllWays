@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import path
 from django.http import HttpResponse
 def home(request):
-    return HttpResponse("Hi, test 5")
+    return HttpResponse("Hi, test 6")
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home),  # корень сайта — функция home

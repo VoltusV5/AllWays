@@ -4,49 +4,41 @@ on:
   push:
     branches:
       - develop
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Чекаутим код
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    # 1️⃣ Клонируем репозиторий
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      # 2. Настраиваем Python
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.12
+    # 2️⃣ Настройка Python
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
 
-      # 3. Устанавливаем зависимости локально
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r backend/requirements.txt
+    # 3️⃣ Установка зависимостей
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r backend/requirements.txt
 
-      # 4. Подключаемся к серверу через API и выполняем команды
-      - name: Deploy and run commands on PythonAnywhere
-        env:
-          PA_USERNAME: ${{ secrets.PA_USERNAME }}
-          PA_API_TOKEN: ${{ secrets.PA_API_TOKEN }}
-        run: |
-          echo "Starting deployment on PythonAnywhere..."
-          
-          # Путь к вашему проекту на сервере
-          PROJECT_DIR="/home/$PA_USERNAME/AllWays/backend"
-          VENV_DIR="/home/$PA_USERNAME/AllWays/venv"
-          
-          # Миграции и collectstatic через bash на сервере
-          curl -X POST https://www.pythonanywhere.com/api/v0/user/$PA_USERNAME/consoles/ \
-            -H "Authorization: Token $PA_API_TOKEN" \
-            -d '{
-                  "console_type": "bash",
-                  "redirects": [],
-                  "command": "source '"$VENV_DIR"'/bin/activate && cd '"$PROJECT_DIR"' && python manage.py migrate && python manage.py collectstatic --noinput"
-                }'
-          
-          # Перезагрузка веб-приложения
-          curl -X POST https://www.pythonanywhere.com/api/v0/user/$PA_USERNAME/webapps/voltusv.pythonanywhere.com/reload/ \
-            -H "Authorization: Token $PA_API_TOKEN"
+    # 4️⃣ Деплой на PythonAnywhere через GitHub API
+    - name: Push to PythonAnywhere repo
+      env:
+        PA_USERNAME: ${{ secrets.PA_USERNAME }}
+        PA_TOKEN: ${{ secrets.PA_API_TOKEN }}
+      run: |
+        git remote add pa "https://${PA_USERNAME}:${PA_TOKEN}@github.com/${PA_USERNAME}/AllWays.git"
+        git push pa develop -f
+
+    # 5️⃣ Перезагрузка веб-приложения через API (без открытия консоли)
+    - name: Reload webapp on PythonAnywhere
+      env:
+        PA_USERNAME: ${{ secrets.PA_USERNAME }}
+        PA_TOKEN: ${{ secrets.PA_API_TOKEN }}
+      run: |
+        curl -X POST "https://www.pythonanywhere.com/api/v0/user/${PA_USERNAME}/webapps/${PA_USERNAME}.pythonanywhere.com/reload/" \
+             -H "Authorization: Token ${PA_TOKEN}"
