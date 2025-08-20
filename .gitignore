@@ -11,3 +11,9 @@ dist/
 
 # Базы данных
 db.sqlite3 
+backend/db.sqlite3
+
+
+
+# .gitignore
+myproject/settings_local.py
