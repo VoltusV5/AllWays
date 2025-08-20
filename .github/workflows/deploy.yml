@@ -26,32 +26,40 @@ jobs:
     - name: Archive project
       run: git archive -o deploy.zip HEAD
 
-    - name: Upload to PythonAnywhere
+    - name: Upload deploy.zip to PythonAnywhere
       env:
         PA_USERNAME: ${{ secrets.PA_USERNAME }}
         PA_API_TOKEN: ${{ secrets.PA_API_TOKEN }}
       run: |
         curl -X POST "https://www.pythonanywhere.com/api/v0/user/${PA_USERNAME}/files/path/home/${PA_USERNAME}/AllWays/deploy.zip" \
              -H "Authorization: Token ${PA_API_TOKEN}" \
-             -F content=@deploy.zip
+             -F "file=@deploy.zip"
 
-    - name: Unpack and Reload on PythonAnywhere
-      env:
-        PA_USERNAME: ${{ secrets.PA_USERNAME }}
-        PA_API_TOKEN: ${{ secrets.PA_API_TOKEN }}
-      run: |
-        curl -X POST "https://www.pythonanywhere.com/api/v0/user/${PA_USERNAME}/bash/" \
-             -H "Authorization: Token ${PA_API_TOKEN}" \
-             -d 'command=unzip -o /home/'"${PA_USERNAME}"'/AllWays/deploy.zip -d /home/'"${PA_USERNAME}"'/AllWays'
-
-        curl -X POST "https://www.pythonanywhere.com/api/v0/user/${PA_USERNAME}/webapps/${PA_USERNAME}.pythonanywhere.com/reload/" \
-             -H "Authorization: Token ${PA_API_TOKEN}"
-
-    - name: Cleanup old deploy archive on PythonAnywhere
+    - name: Unpack and reload webapp on PythonAnywhere
       env:
         PA_USERNAME: ${{ secrets.PA_USERNAME }}
         PA_API_TOKEN: ${{ secrets.PA_API_TOKEN }}
       run: |
         curl -X POST "https://www.pythonanywhere.com/api/v0/user/${PA_USERNAME}/bash_commands/" \
              -H "Authorization: Token ${PA_API_TOKEN}" \
-             -d 'command=rm -f /home/'"${PA_USERNAME}"'/AllWays/deploy.zip'
+             -H "Content-Type: application/json" \
+             -d '{
+                   "commands": [
+                     "unzip -o /home/'"${PA_USERNAME}"'/AllWays/deploy.zip -d /home/'"${PA_USERNAME}"'/AllWays",
+                     "source /home/'"${PA_USERNAME}"'/.virtualenvs/AllWays/bin/activate",
+                     "pip install -r /home/'"${PA_USERNAME}"'/AllWays/backend/requirements.txt"
+                   ]
+                 }'
+
+        curl -X POST "https://www.pythonanywhere.com/api/v0/user/${PA_USERNAME}/webapps/${PA_USERNAME}.pythonanywhere.com/reload/" \
+             -H "Authorization: Token ${PA_API_TOKEN}"
+
+    - name: Cleanup old deploy archive
+      env:
+        PA_USERNAME: ${{ secrets.PA_USERNAME }}
+        PA_API_TOKEN: ${{ secrets.PA_API_TOKEN }}
+      run: |
+        curl -X POST "https://www.pythonanywhere.com/api/v0/user/${PA_USERNAME}/bash_commands/" \
+             -H "Authorization: Token ${PA_API_TOKEN}" \
+             -H "Content-Type: application/json" \
+             -d '{"commands":["rm -f /home/'"${PA_USERNAME}"'/AllWays/deploy.zip"]}'
