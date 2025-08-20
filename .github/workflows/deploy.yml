@@ -10,26 +10,43 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Чекаутим код
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # 2. Настраиваем Python
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: 3.12
 
+      # 3. Устанавливаем зависимости локально
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r backend/requirements.txt
 
-      - name: Deploy to PythonAnywhere
-        uses: pythonanywhere/github-action@v1
-        with:
-          username: ${{ secrets.PA_USERNAME }}
-          token: ${{ secrets.PA_API_TOKEN }}
-          webapp: voltusv.pythonanywhere.com
-          branch: develop
-          working_directory: /home/VoltusV/AllWays/backend
-          virtualenv: /home/VoltusV/AllWays/venv
-
+      # 4. Подключаемся к серверу через API и выполняем команды
+      - name: Deploy and run commands on PythonAnywhere
+        env:
+          PA_USERNAME: ${{ secrets.PA_USERNAME }}
+          PA_API_TOKEN: ${{ secrets.PA_API_TOKEN }}
+        run: |
+          echo "Starting deployment on PythonAnywhere..."
+          
+          # Путь к вашему проекту на сервере
+          PROJECT_DIR="/home/$PA_USERNAME/AllWays/backend"
+          VENV_DIR="/home/$PA_USERNAME/AllWays/venv"
+          
+          # Миграции и collectstatic через bash на сервере
+          curl -X POST https://www.pythonanywhere.com/api/v0/user/$PA_USERNAME/consoles/ \
+            -H "Authorization: Token $PA_API_TOKEN" \
+            -d '{
+                  "console_type": "bash",
+                  "redirects": [],
+                  "command": "source '"$VENV_DIR"'/bin/activate && cd '"$PROJECT_DIR"' && python manage.py migrate && python manage.py collectstatic --noinput"
+                }'
+          
+          # Перезагрузка веб-приложения
+          curl -X POST https://www.pythonanywhere.com/api/v0/user/$PA_USERNAME/webapps/voltusv.pythonanywhere.com/reload/ \
+            -H "Authorization: Token $PA_API_TOKEN"
