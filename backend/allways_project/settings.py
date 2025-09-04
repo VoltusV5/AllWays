@@ -12,13 +12,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "allways_db",
-        "USER": "root",
-        "PASSWORD": "password",
-        "HOST": "localhost",
+        "NAME": "VoltusV$default",
+        "USER": "VoltusV",
+        "PASSWORD": "c~yRP6#XnE4M",
+        "HOST": "VoltusV.mysql.pythonanywhere-services.com",
         "PORT": "3306",
         "OPTIONS": {
             "charset": "utf8mb4",
+	    "init_command": "SET sql_mode='STRICT_TRANS_TABLES'"
         },
     }
 }
@@ -36,6 +37,8 @@ ALLOWED_HOSTS = [
     'voltusv.pythonanywhere.com'
 ]
 
+AUTH_USER_MODEL = 'core.User'
+
 # Установленные приложения
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -44,8 +47,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "models",
+    "core",
 ]
+
 
 # Настройки статических файлов
 STATIC_URL = "/static/"

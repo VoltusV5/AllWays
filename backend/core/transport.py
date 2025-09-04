@@ -1,6 +1,4 @@
 from django.db import models
-from .users import User
-
 
 class Provider(models.Model):
     name = models.CharField(max_length=255)
@@ -55,7 +53,8 @@ class UserRoute(models.Model):
         ("to_only", "To only"),
     )
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="routes")
+        "core.User", on_delete=models.CASCADE, related_name="routes"
+    )
     route_type = models.CharField(max_length=20, choices=ROUTE_TYPES)
     start_stop = models.ForeignKey(
         Stop, on_delete=models.CASCADE, related_name="start_routes")
