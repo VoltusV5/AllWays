@@ -1,11 +1,11 @@
 <template>
   <header class="header">
     <div class="logo">
-      <img src="C:/Visual_Studio/WEB/AllWays/AW-VueJs/AllWays-vue/src/assets/images/logo-big.png" alt="AllWays Logo">
+      <img src="@/assets/images/logo-big.png" alt="AllWays Logo">
     </div>
 
     <div class="user">
-      <img src="C:/Visual_Studio/WEB/AllWays/AW-VueJs/AllWays-vue/src/assets/images/icon.png" alt="User Icon">
+      <img src="@/assets/images/icon.png" alt="User Icon">
     </div>
     <nav></nav>
   </header>

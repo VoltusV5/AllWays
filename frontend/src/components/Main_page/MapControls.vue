@@ -4,7 +4,7 @@
     <div class="control-group distance-control">
       <div class="rectangle control-bg"></div>
       <div class="distance control-icon">
-        <img src="C:/Visual_Studio/WEB/AllWays/AW-VueJs/AllWays-vue/src/assets/images/distance.png" alt="Расстояние">
+        <img src="@/assets/images/distance.png" alt="Расстояние">
       </div>
     </div>
   </div>

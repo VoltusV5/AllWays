@@ -2,18 +2,18 @@
   <div class="search-container">
     <div class="bottom-panel"></div>
     <div class="arrow-indicator">
-      <img src="C:/Visual_Studio/WEB/AllWays/AW-VueJs/AllWays-vue/src/assets/images/arrow.png" alt="Индикатор">
+      <img src="@/assets/images/arrow.png" alt="Индикатор">
     </div>
     
     <div class="search-bar">
       <div class="search-input">
-        <img src="C:/Visual_Studio/WEB/AllWays/AW-VueJs/AllWays-vue/src/assets/images/logo-small.png" alt="Logo" class="search-logo">
+        <img src="@/assets/images/logo-small.png" alt="Logo" class="search-logo">
         <input type="text" placeholder="Поиск и выбор мест" class="search-field">
-        <img src="C:/Visual_Studio/WEB/AllWays/AW-VueJs/AllWays-vue/src/assets/images/search_magnifier_1.png" alt="Поиск" class="search-icon">
+        <img src="@/assets/images/search_magnifier_1.png" alt="Поиск" class="search-icon">
       </div>
       
       <div class="bookmark-button">
-        <img src="C:/Visual_Studio/WEB/AllWays/AW-VueJs/AllWays-vue/src/assets/images/bookmark.png" alt="Закладки">
+        <img src="@/assets/images/bookmark.png" alt="Закладки">
       </div>
     </div>
   </div>
