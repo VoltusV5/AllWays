@@ -1,9 +1,15 @@
 from django.contrib import admin
-from django.urls import path
-from django.http import HttpResponse
-def home(request):
-    return HttpResponse("Hi, test 9")
+from django.urls import path, re_path
+from core.views import FrontendAppView
+from users.views import users_stub  # пример API-заглушки
+
 urlpatterns = [
+    # админка
     path('admin/', admin.site.urls),
-    path('', home),  # корень сайта — функция home
+
+    # API-заглушки (их можешь добавлять здесь или через include)
+    path('api/users/', users_stub, name="users_stub"),
+
+    # все остальные пути → Vue SPA
+    re_path(r'^.*$', FrontendAppView.as_view(), name="frontend"),
 ]

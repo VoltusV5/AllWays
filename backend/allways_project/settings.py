@@ -57,6 +57,16 @@ STATIC_ROOT = BASE_DIR / "staticfiles"  # collectstatic собирает сюд�
 STATICFILES_DIRS = [
     BASE_DIR / "backend" /  "static",  # если есть свои css/js
 ]
+# Путь к Vue build
+VUE_DIST_DIR = BASE_DIR / "backend" / "frontend" / "dist"
+
+# Добавляем статику Vue (css/js) в общие STATICFILES_DIRS
+STATICFILES_DIRS = [
+    BASE_DIR / "backend" / "static",   # если есть свои css/js
+    VUE_DIST_DIR / "assets",           # Vue собранные ассеты
+]
+
+
 
 # Простейшая конфигурация middleware (нужна для работы админки)
 MIDDLEWARE = [
