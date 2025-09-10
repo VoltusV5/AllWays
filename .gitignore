@@ -24,7 +24,7 @@ lerna-debug.log*
 # Frontend
 # ======================
 node_modules/
-dist/
+# dist/
 dist-ssr/
 coverage/
 cypress/videos/
