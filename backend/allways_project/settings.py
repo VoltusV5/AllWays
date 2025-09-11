@@ -54,17 +54,16 @@ INSTALLED_APPS = [
 # Настройки статических файлов
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"  # collectstatic собирает сюда
+
+# Пути, откуда брать статику
 STATICFILES_DIRS = [
-    BASE_DIR / "backend" /  "static",  # если есть свои css/js
+    BASE_DIR / "backend" / "static",      # свои css/js
+    BASE_DIR / "backend" / "frontend" / "dist" / "assets",  # Vue ассеты
 ]
+
 # Путь к Vue build
 VUE_DIST_DIR = BASE_DIR / "backend" / "frontend" / "dist"
 
-# Добавляем статику Vue (css/js) в общие STATICFILES_DIRS
-STATICFILES_DIRS = [
-    BASE_DIR / "backend" / "static",   # если есть свои css/js
-    VUE_DIST_DIR / "assets",           # Vue собранные ассеты
-]
 
 
 
