@@ -1,15 +1,14 @@
+# allways_project/urls.py
 from django.contrib import admin
 from django.urls import path, re_path
-from core.views import FrontendAppView
-from users.views import users_stub  # пример API-заглушки
+from core.views import FrontendAppView  # импорт вашего класса
+from django.conf import settings
 
 urlpatterns = [
-    # админка
-    path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls),  # админка
+    # любой другой API- или backend-URL можно здесь добавить, например:
+    # path('api/users/', include('users.urls')),
 
-    # API-заглушки (их можешь добавлять здесь или через include)
-    path('api/users/', users_stub, name="users_stub"),
-
-    # все остальные пути → Vue SPA
-    re_path(r'^.*$', FrontendAppView.as_view(), name="frontend"),
+    # все остальные пути перенаправляем на Vue
+    re_path(r'^.*$', FrontendAppView.as_view(), name='home'),
 ]
