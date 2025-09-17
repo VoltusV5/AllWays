@@ -6,8 +6,9 @@ from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),  # админка
+    path("users/", include("users.urls")),
     # ... любые другие backend-роуты
 
     # Всё остальное отдаём Vue
-    re_path(r'^(?!admin/).*$', FrontendAppView.as_view(), name='home'),
+    re_path(r'^(?!admin/|users/).*$', FrontendAppView.as_view(), name='home'),
 ]
