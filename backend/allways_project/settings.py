@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "core",
+    "users",
 ]
 
 
@@ -79,6 +80,7 @@ MIDDLEWARE = [
 
 # Корень URL
 ROOT_URLCONF = "allways_project.urls"
+
 
 # Шаблоны (можно минимально)
 TEMPLATES = [

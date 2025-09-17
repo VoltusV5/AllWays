@@ -26,9 +26,8 @@ class UserManager(BaseUserManager):
 # Кастомная модель пользователя
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
-    password_hash = models.CharField(max_length=255, blank=True)  # для совместимости с твоим полем
     is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)  # обязательно для админки
+    is_staff = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     last_login = models.DateTimeField(null=True, blank=True)
@@ -42,6 +41,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
 
 # Остальные модели с привязкой к кастомному пользователю через settings.AUTH_USER_MODEL
 class SocialLogin(models.Model):
