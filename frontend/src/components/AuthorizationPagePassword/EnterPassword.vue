@@ -24,8 +24,12 @@
 </template>
 
 <script>
+
+import axios from 'axios';
+
 export default {
   name: "EnterPassword",
+  props: ['email'], // Принимаем email как пропс
   data() {
     return {
       password: "",
@@ -33,13 +37,32 @@ export default {
     };
   },
   methods: {
-    login() {
+    // Метод для авторизации
+    async login() {
       if (!this.password) {
         alert("Введите пароль!");
         return;
       }
-      alert(`Пароль введён: ${this.password}`);
+      
+      try {
+        const response = await axios.post('/api/users/login/', {
+          email: this.email,
+          password: this.password
+        });
+
+        if (response.status === 200) {
+          this.$emit('login-success');
+        }
+      } catch (error) {
+        if (error.response && error.response.data) {
+          alert(error.response.data.error || "Неверный email или пароль.");
+        } else {
+          alert("Произошла ошибка, попробуйте позже.");
+        }
+      }
     },
+    
+    // Метод для восстановления пароля
     forgotPassword() {
       alert("Функция восстановления пароля");
     },

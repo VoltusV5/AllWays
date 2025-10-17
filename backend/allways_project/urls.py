@@ -5,10 +5,10 @@ from core.views import FrontendAppView  # импорт вашего класса
 from django.conf import settings
 
 urlpatterns = [
-    path('admin/', admin.site.urls),  # админка
-    path("users/", include("users.urls")),
+    path('admin/', admin.site.urls),
+    path('api/users/', include('users.urls')),
     # ... любые другие backend-роуты
 
     # Всё остальное отдаём Vue
-    re_path(r'^(?!admin/|users/).*$', FrontendAppView.as_view(), name='home'),
+    re_path(r'^(?!admin/|api/users/).*$', FrontendAppView.as_view(), name='home'),
 ]

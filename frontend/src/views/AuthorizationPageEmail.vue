@@ -9,24 +9,43 @@
 
 <script>
     // import AuthHeader from "@/components/AuthorizationPageEmail/AuthHeader.vue"
-    import EnterEmail from '@/components/AuthorizationPageEmail/EnterEmail.vue'
-   
-    export default {
-        name: "AuthorizationPageEmail",
-        components: {
-            // AuthHeader,
-            EnterEmail
-        },
-        methods: {
-          handleEmailEntered(email) {
-            // Переходим на страницу ввода пароля, передавая email
+import axios from 'axios';
+import EnterEmail from '@/components/AuthorizationPageEmail/EnterEmail.vue'
+
+export default {
+    name: "AuthorizationPageEmail",
+    components: {
+        // AuthHeader,
+        EnterEmail
+    },
+    methods: {
+      async handleEmailEntered(email) {
+        try {
+          const response = await axios.post('/api/users/check-email/', { email });
+
+          if (response.status === 200 && response.data.exists) {
             this.$router.push({
               path: '/authorization-password',
               query: { email: email }
             });
+          } else {
+            alert('Email не найден. Пожалуйста, зарегистрируйтесь.');
+          }
+          } catch (error) {
+            console.error("Error while checking email:", error)
+            alert("Ошибка при проверке email. Попробуйте снова.")
           }
         }
-    }
+      },
+      handleEmailEntered(email) {
+        // Переходим на страницу ввода пароля, передавая email
+        this.$router.push({
+          path: '/authorization-password',
+          query: { email: email }
+        });
+      }
+    };
+
 </script>
 
 <style scoped>

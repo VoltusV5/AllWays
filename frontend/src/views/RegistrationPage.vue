@@ -5,6 +5,7 @@
       <img src="@/assets/images/logo-big.png" alt="AllWays Logo" class="logo">
       <h2>Создайте аккаунт, чтобы покупать билеты и сохранять поездки</h2>
       
+      <!-- Логин -->
       <div class="input-wrapper">
         <input 
           type="text" 
@@ -21,6 +22,7 @@
         </button>
       </div>
 
+        <!-- Email -->
       <div class="input-wrapper">
         <input 
           type="email" 
@@ -37,6 +39,7 @@
         </button>
       </div>
 
+      <!-- Пароль -->
       <div class="input-wrapper">
         <input 
           :type="showPassword ? 'text' : 'password'" 
@@ -52,6 +55,7 @@
         </button>
       </div>
 
+      <!-- Подтверждение пароля -->
       <div class="input-wrapper">
         <input 
           :type="showConfirmPassword ? 'text' : 'password'" 
@@ -67,6 +71,7 @@
         </button>
       </div>
 
+      <!-- Политика конфиденциальности -->
       <div class="privacy-policy">
         <input 
           type="checkbox" 
@@ -75,11 +80,14 @@
         />
         <label for="privacy-policy">Я принимаю политику конфиденциальности</label>
       </div>
-
+      
+      <!-- Кнопка регистрации -->
       <button class="register-button" @click="register">Создать аккаунт</button>
       
+      <!-- Социальная авторизация -->
       <SocialLoginButtons />
       
+      <!-- Ссылка на страницу входа -->
       <div class="login-link-wrapper">
         <div class="login-link" @click="goToLogin">Уже есть аккаунт</div>
       </div>
@@ -90,6 +98,7 @@
 <script>
 import ArrowBack from '@/ui/ArrowBack.vue';
 import SocialLoginButtons from '@/ui/SocialLoginButtons.vue';
+import axios from 'axios';
 
 export default {
   name: "RegistrationPage",
@@ -109,20 +118,44 @@ export default {
     };
   },
   methods: {
-    register() {
+    async register() {
+      // Проверка обязательных полей
       if (!this.login || !this.email || !this.password || !this.confirmPassword) {
         alert("Заполните все поля!");
         return;
       }
+
+      // Проверка совпадения паролей
       if (this.password !== this.confirmPassword) {
         alert("Пароли не совпадают!");
         return;
       }
+
+      // Проверка принятия политики
       if (!this.acceptPolicy) {
         alert("Пожалуйста, примите политику конфиденциальности!");
         return;
       }
-      alert("Регистрация успешна!");
+
+      try {
+        const response = await axios.post('/api/users/register/', {
+          email: this.email,
+          password: this.password,
+          username: this.login,
+        });
+
+        if (response.status === 201) {
+          alert("Регистрация успешна!");
+          this.$router.push('/login');
+        }
+      } catch (error) {
+        console.error("Ошибка регистрации:", error.response.data);
+        if (error.response && error.response.data) {
+          alert(error.response.data.error || 'Ошибка при регистрации');
+        } else {
+          alert('Что-то пошло не так, попробуйте снова.');
+        }
+      }
     },
     clearLogin() {
       this.login = "";

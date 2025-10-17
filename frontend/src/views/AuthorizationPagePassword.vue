@@ -28,9 +28,14 @@ export default {
   methods: {
     handleLoginSuccess() {
       this.$router.push('/');
+    },
+
+    handleLoginFail(errorMessage) {
+      alert(errorMessage);
     }
   }
 };
+
 </script>
 
 <style scoped>

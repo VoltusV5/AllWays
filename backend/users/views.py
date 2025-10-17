@@ -1,38 +1,47 @@
-from django.shortcuts import render, redirect
+
 from django.contrib.auth import get_user_model, authenticate, login
+from django.http import JsonResponse
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+from users.serializers import UserSerializer
 
 User = get_user_model()
 
+# Регистрация пользователя
+@api_view(['POST'])
 def register_view(request):
     if request.method == "POST":
-        email = request.POST.get("email")
-        password1 = request.POST.get("password1")
-        password2 = request.POST.get("password2")
-
-        # Проверка паролей
-        if password1 != password2:
-            return render(request, "users/register.html", {"error": "Пароли не совпадают."})
-
-        # Проверка, есть ли уже такой email
+        email = request.data.get("email")
+        password = request.data.get("password")
+        password2 = request.data.get("password2")
+        
+        if password != password2:
+            return Response({"error": "Пароли не совпадают"}, status=status.HTTP_400_BAD_REQUEST)
+        
         if User.objects.filter(email=email).exists():
-            return render(request, "users/register.html", {"error": "Email уже используется."})
+            return Response({"error": "Email уже используется"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Создаём пользователя
-        user = User.objects.create_user(email=email, password=password1)
-        return redirect("login")  # Перенаправляем на страницу логина
+        user = User.objects.create_user(email=email, password=password)
+        return Response({"message": "Пользователь успешно зарегистрирован"}, status=status.HTTP_201_CREATED)
 
-    return render(request, "users/register.html")
-
+# Авторизация пользователя
+@api_view(['POST'])
 def login_view(request):
     if request.method == "POST":
-        email = request.POST.get("email")
-        password = request.POST.get("password")
-
+        email = request.data.get("email")
+        password = request.data.get("password")
+        
         user = authenticate(request, email=email, password=password)
-        if user is not None:
+        if user:
             login(request, user)
-            return redirect("/")  # Главная или профиль
-        else:
-            return render(request, "users/login.html", {"error": "Неверный email или пароль."})
+            return Response({"message": "Успешная авторизация"}, status=status.HTTP_200_OK)
+        return Response({"error": "Неверный email или пароль"}, status=status.HTTP_400_BAD_REQUEST)
 
-    return render(request, "users/login.html")
+# Проверка существования email
+@api_view(['POST'])
+def check_email(request):
+    email = request.data.get('email')
+    if User.objects.filter(email=email).exists():
+        return JsonResponse({'exists': True})
+    return JsonResponse({'exists': False})
