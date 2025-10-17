@@ -9,11 +9,11 @@
 </template>
 
 <script>
-import Header from "@/components/Main_page/Header.vue"
-import MapControls from "@/components/Main_page/MapControls.vue"
-import SearchBar from "@/components/Main_page/SearchBar.vue"
-import TransportFilters from "@/components/Main_page/TransportFilters.vue"
-import Map from "@/components/Main_page/Map.vue"
+import Header from "@/components/MainPage/Header.vue"
+import MapControls from "@/components/MainPage/MapControls.vue"
+import SearchBar from "@/components/MainPage/SearchBar.vue"
+import TransportFilters from "@/components/MainPage/TransportFilters.vue"
+import Map from "@/components/MainPage/Map.vue"
 
 export default {
     name: "MainPage",
