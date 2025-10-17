@@ -14,9 +14,9 @@ def register_view(request):
     if request.method == "POST":
         email = request.data.get("email")
         password = request.data.get("password")
-        password2 = request.data.get("password2")
+        confirmPassword = request.data.get("confirmPassword")
         
-        if password != password2:
+        if password != confirmPassword:
             return Response({"error": "Пароли не совпадают"}, status=status.HTTP_400_BAD_REQUEST)
         
         if User.objects.filter(email=email).exists():
