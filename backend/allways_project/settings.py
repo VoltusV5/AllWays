@@ -53,6 +53,12 @@ INSTALLED_APPS = [
 ]
 
 
+CSRF_COOKIE_NAME = 'csrftoken'  # Имя cookie для CSRF токена
+CSRF_TRUSTED_ORIGINS = [
+    'https://yourdomain.com',   # Ваш домен
+    'http://localhost:8080',    # Для локальной разработки
+]
+
 # Настройки статических файлов
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"  # collectstatic собирает сюда
