@@ -1,20 +1,22 @@
-// vite.config.js
 import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
-const isOnServer = process.env.ON_SERVER === '1';
+export default defineConfig(({ mode }) => {
+  // Проверяем, если режим development (для npm run dev), то базовый путь будет /
+  const isDev = mode === 'development';
 
-export default defineConfig({
-  base: isOnServer ? '/static/' : '/', // Если на сервере, используем /static/, если локально - /
-  plugins: [
-    vue(),
-    vueDevTools(),
-  ],
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+  return {
+    base: isDev ? '/' : '/static/', // Если на сервере, используем /static/, если локально - /
+    plugins: [
+      vue(),
+      vueDevTools(),
+    ],
+    resolve: {
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url))
+      },
     },
-  },
-})
+  };
+});
