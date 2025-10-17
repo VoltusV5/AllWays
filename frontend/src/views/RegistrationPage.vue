@@ -156,7 +156,7 @@ export default {
 
         if (response.status === 201) {
           alert("Регистрация успешна!");
-          this.$router.push('/login');
+          this.$router.push('/authorization-email');
         }
       } catch (error) {
         console.error("Ошибка регистрации:", error.response.data);

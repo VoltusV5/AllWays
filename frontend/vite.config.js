@@ -4,8 +4,10 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
+const isOnServer = process.env.ON_SERVER === '1';
+
 export default defineConfig({
-  base: '/static/',
+  base: isOnServer ? '/static/' : '/', // Если на сервере, используем /static/, если локально - /
   plugins: [
     vue(),
     vueDevTools(),
