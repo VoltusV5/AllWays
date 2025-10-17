@@ -29,8 +29,15 @@
         </div>
 
         
-        <button class="find_route_btn">Найти Маршруты</button>
+        <button class="find_route_btn" @click="findRoute" >Найти Маршруты</button>
         
+        <div v-if="error" class="error-message">{{ error }}</div>
+        <div v-if="routes.length" class="routes-list">
+            <div v-for="route in routes" :key="route.id" class="route">
+                <h4>{{ route.start }} - {{ route.end }}</h4>
+                <p>{{ route.message }}</p>
+            </div>
+        </div>
 
         <div class="history">
             <h3>История</h3> 
@@ -68,6 +75,7 @@
 import RouteInput from "@/components/RouteBuilder/RouteInput.vue";
 import TransportFilters from "@/ui/TransportFilters.vue";
 import collapsible from "@/ui/v-collapsible.vue";
+import axios from 'axios';
 
 export default {
     name: "RouteBuilder",
@@ -80,8 +88,36 @@ export default {
         return {
         from: "",
         to: "",
+        routes: [],
+        error: "",
         };
     },
+    methods: {
+        async findRoute() {
+            if (!this.from || !this.to) {
+                this.error = "Пожалуйста, укажите начальную и конечную точку маршрута!";
+                return;
+            }
+
+            this.error = ""; // Сбрасываем предыдущие ошибки
+            try {
+                // Отправляем запрос на сервер с любым текстом
+                const response = await axios.post('/api/routes/', {
+                    from: this.from,
+                    to: this.to,
+                });
+
+                if (response.data.routes) {
+                    this.routes = response.data.routes;  // Получаем маршруты
+                } else {
+                    this.error = "Маршруты не найдены!";
+                }
+            } catch (err) {
+                console.error("Ошибка при получении маршрутов:", err);
+                this.error = "Ошибка связи с сервером. Попробуйте позже.";
+            }
+        }
+    }
 }
 </script>
 
