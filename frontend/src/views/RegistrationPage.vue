@@ -129,6 +129,8 @@ export default {
       // Проверка совпадения паролей
       if (this.password !== this.confirmPassword) {
         alert("Пароли не совпадают!");
+        console.log('Пароль:', this.password);
+        console.log('Подтверждение пароля:', this.confirmPassword);
         return;
       }
 
@@ -147,7 +149,7 @@ export default {
           username: this.login,
         }, {
           headers: {
-            'X-CSRFToken': csrfToken // Добавляем CSRF токен в заголовок
+            'X-CSRFToken': csrfToken, // Добавляем CSRF токен в заголовок
           }
         });
 
