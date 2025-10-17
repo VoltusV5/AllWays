@@ -99,6 +99,7 @@
 import ArrowBack from '@/ui/ArrowBack.vue';
 import SocialLoginButtons from '@/ui/SocialLoginButtons.vue';
 import axios from 'axios';
+import { getCSRFToken } from '@/utils/csrf';
 
 export default {
   name: "RegistrationPage",
@@ -137,11 +138,17 @@ export default {
         return;
       }
 
+      const csrfToken = getCSRFToken();
+
       try {
         const response = await axios.post('/api/users/register/', {
           email: this.email,
           password: this.password,
           username: this.login,
+        }, {
+          headers: {
+            'X-CSRFToken': csrfToken // Добавляем CSRF токен в заголовок
+          }
         });
 
         if (response.status === 201) {
