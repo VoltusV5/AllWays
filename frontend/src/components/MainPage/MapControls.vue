@@ -4,7 +4,7 @@
     <div class="control-group distance-control">
       <div class="rectangle control-bg"></div>
       <div class="distance control-icon">
-        <img src="@/assets/images/distance.png" alt="Расстояние">
+        <img src="@/assets/images/distance.png" @click="GoToRouteBuilder" alt="Расстояние">
       </div>
     </div>
   </div>
@@ -12,7 +12,16 @@
 
 <script>
 export default {
-  name: 'MapControls'
+  name: 'MapControls',
+  methods: {
+        GoToRouteBuilder() {
+            try {
+                this.$router.push('/build-route');
+            } catch (error) {
+                console.error('Navigation error:', error);
+            }
+        }
+    }
 }
 </script>
 
