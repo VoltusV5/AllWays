@@ -146,10 +146,11 @@ export default {
         const response = await axios.post('/api/users/register/', {
           email: this.email,
           password: this.password,
+          confirmPassword: this.confirmPassword,
           username: this.login,
         }, {
           headers: {
-            'X-CSRFToken': csrfToken, // Добавляем CSRF токен в заголовок
+            'X-CSRFToken': csrfToken // Добавляем CSRF токен в заголовок
           }
         });
 
