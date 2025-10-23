@@ -1,6 +1,6 @@
 <template>
   <div class="search-container">
-    <div class="bottom-panel"></div>
+    <div class="bottom-panel" ></div>
     <div class="arrow-indicator">
       <img src="@/assets/images/arrow.png" alt="Индикатор">
     </div>
