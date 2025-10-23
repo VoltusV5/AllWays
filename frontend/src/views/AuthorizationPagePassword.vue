@@ -2,14 +2,14 @@
   <div class="authorization-page-password">
     <div class="auth-container">
       <AuthHeader />
-      <EnterPassword :email="userEmail" @login-success="handleLoginSuccess" />
+      <EnterPassword :email="userEmail" @login-success="handleLoginSuccess" @login-fail="handleLoginFail" />
     </div>
   </div>
 </template>
 
 <script>
-import AuthHeader from "@/components/AuthorizationPagePassword/AuthHeader.vue"
-import EnterPassword from '@/components/AuthorizationPagePassword/EnterPassword.vue'
+import AuthHeader from "@/components/AuthorizationPagePassword/AuthHeader.vue";
+import EnterPassword from '@/components/AuthorizationPagePassword/EnterPassword.vue';
 
 export default {
   name: "AuthorizationPagePassword",
@@ -20,22 +20,24 @@ export default {
   data() {
     return {
       userEmail: ''
-    }
+    };
   },
   mounted() {
-    this.userEmail = this.$route.query.email || 'mail.mail@gmail.com';
+    this.userEmail = this.$route.query.email || '';
+    if (!this.userEmail) {
+      this.handleLoginFail('Email не предоставлен. Пожалуйста, вернитесь на страницу ввода email.');
+      this.$router.push('/authorization-email');
+    }
   },
   methods: {
     handleLoginSuccess() {
       this.$router.push('/');
     },
-
     handleLoginFail(errorMessage) {
-      alert(errorMessage);
+      alert(`Ошибка входа: ${errorMessage}`);
     }
   }
 };
-
 </script>
 
 <style scoped>

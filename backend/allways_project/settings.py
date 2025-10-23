@@ -73,6 +73,10 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8080',    # Для локальной разработки
 ]
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',  # Стандартный бэкенд
+]
+
 # Настройки статических файлов
 STATIC_URL = "/static/"
 

@@ -32,16 +32,25 @@ def login_view(request):
         email = request.data.get("email")
         password = request.data.get("password")
         
+        if not email or not password:
+            return Response({"error": "Email и пароль обязательны"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Нормализация email
+        email = email.lower()
         user = authenticate(request, email=email, password=password)
         if user:
             login(request, user)
             return Response({"message": "Успешная авторизация"}, status=status.HTTP_200_OK)
         return Response({"error": "Неверный email или пароль"}, status=status.HTTP_400_BAD_REQUEST)
+    
 
-# Проверка существования email
 @api_view(['POST'])
 def check_email(request):
     email = request.data.get('email')
-    if User.objects.filter(email=email).exists():
+    if not email:
+        return JsonResponse({'error': 'Email обязателен'}, status=400)
+    # Нормализация email в нижний регистр для нечувствительного сравнения
+    email = email.lower()
+    if User.objects.filter(email__iexact=email).exists():
         return JsonResponse({'exists': True})
     return JsonResponse({'exists': False})

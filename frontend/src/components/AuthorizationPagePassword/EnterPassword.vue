@@ -3,13 +3,15 @@
     <h2>Введите пароль</h2>
     
     <div class="account-info">
-      Для аккаунта <span class="email">mail.mail@gmail.com</span>
+      Для аккаунта <span class="email">{{ email }}</span>
     </div>
 
     <div class="input-wrapper">
-      <input :type="showPassword ? 'text' : 'password'" v-model="password" 
-        placeholder="Введите пароль" />
-          
+      <input 
+        :type="showPassword ? 'text' : 'password'" 
+        v-model="password" 
+        placeholder="Введите пароль" 
+      />
       <button type="button" class="toggle-password" @click="showPassword = !showPassword">
         {{ showPassword ? '🙈' : '👁️' }}
       </button>
@@ -24,12 +26,17 @@
 </template>
 
 <script>
-
 import axios from 'axios';
+import { getCSRFToken } from '@/utils/csrf';
 
 export default {
   name: "EnterPassword",
-  props: ['email'], // Принимаем email как пропс
+  props: {
+    email: {
+      type: String,
+      required: true
+    }
+  },
   data() {
     return {
       password: "",
@@ -37,32 +44,41 @@ export default {
     };
   },
   methods: {
-    // Метод для авторизации
     async login() {
       if (!this.password) {
-        alert("Введите пароль!");
+        this.$emit('login-fail', 'Введите пароль!');
         return;
       }
       
       try {
-        const response = await axios.post('/api/users/login/', {
-          email: this.email,
-          password: this.password
-        });
+        const csrfToken = getCSRFToken();
+        const response = await axios.post(
+          '/api/users/login/',
+          {
+            email: this.email,
+            password: this.password
+          },
+          {
+            headers: {
+              'X-CSRFToken': csrfToken
+            }
+          }
+        );
 
         if (response.status === 200) {
           this.$emit('login-success');
         }
       } catch (error) {
-        if (error.response && error.response.data) {
-          alert(error.response.data.error || "Неверный email или пароль.");
+        console.error('Ошибка при входе:', error);
+        if (error.response && error.response.status === 403) {
+          this.$emit('login-fail', 'Ошибка CSRF. Пожалуйста, обновите страницу и попробуйте снова.');
+        } else if (error.response && error.response.data.error) {
+          this.$emit('login-fail', error.response.data.error);
         } else {
-          alert("Произошла ошибка, попробуйте позже.");
+          this.$emit('login-fail', 'Произошла ошибка, попробуйте позже.');
         }
       }
     },
-    
-    // Метод для восстановления пароля
     forgotPassword() {
       alert("Функция восстановления пароля");
     },
