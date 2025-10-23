@@ -89,6 +89,7 @@ else:
     STATICFILES_DIRS = [
         BASE_DIR / "frontend" / "dist",  # Папка, где лежат скомпилированные файлы фронтенда
     ]
+    STATIC_ROOT = BASE_DIR / "staticfiles"
 
 VUE_DIST_DIR = BASE_DIR / "backend" / "frontend" / "dist"
 
