@@ -7,6 +7,7 @@ from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/users/', include('users.urls')),
+    path('api/routes/', include('routes.urls')),
     # ... любые другие backend-роуты
 
     # Всё остальное отдаём Vue

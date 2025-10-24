@@ -9,11 +9,11 @@
                 label="Откуда" 
                 placeholder="введите начальную точку маршрута" 
                 v-model="from" 
-                />
+            />
 
             <!-- Кнопка для обмена местами -->
             <div class="swap_container">
-                <button class="swap_btn">
+                <button class="swap_btn" @click="swapPoints">
                     <img src="@/assets/images/swap 1.png" />
                 </button>
             </div>
@@ -23,48 +23,31 @@
                 label="Куда" 
                 placeholder="введите конечную точку маршрута" 
                 v-model="to" 
-                />
+            />
 
             <TransportFilters class="custom-transport-filters" />
         </div>
 
-        
-        <button class="find_route_btn" @click="findRoute" >Найти Маршруты</button>
+        <button class="find_route_btn" @click="findRoute">Найти Маршруты</button>
         
         <div v-if="error" class="error-message">{{ error }}</div>
         <div v-if="routes.length" class="routes-list">
             <div v-for="route in routes" :key="route.id" class="route">
-                <h4>{{ route.start }} - {{ route.end }}</h4>
-                <p>{{ route.message }}</p>
+                <h4>{{ route.general_start_point }} - {{ route.general_end_point }}</h4>
+                <p>Маршрут: {{ route.name }}</p>
             </div>
         </div>
 
         <div class="history">
             <h3>История</h3> 
             <div class="history_container">
-                <div class="history_element"> 
-                    <h4>Центральный парк</h4> 
+                <div v-for="route in routes" :key="route.id" class="history_element"> 
+                    <h4>{{ route.general_start_point }}</h4> 
                     <img src="@/assets/images/arrow_to_from.png" /> 
-                    <h4>Центральный парк</h4> 
-                    <h6>Москва, ул. Лесная, 15</h6> 
-                    <p>2 км</p> 
-                    <h6>Москва, ул. Лесная, 15</h6> 
-                </div>
-                <div class="history_element"> 
-                    <h4>Центральный парк</h4> 
-                    <img src="@/assets/images/arrow_to_from.png" /> 
-                    <h4>Центральный парк</h4> 
-                    <h6>Москва, ул. Лесная, 15</h6> 
-                    <p>2 км</p> 
-                    <h6>Москва, ул. Лесная, 15</h6> 
-                </div>
-                <div class="history_element"> 
-                    <h4>Центральный парк</h4> 
-                    <img src="@/assets/images/arrow_to_from.png" /> 
-                    <h4>Центральный парк</h4> 
-                    <h6>Москва, ул. Лесная, 15</h6> 
-                    <p>2 км</p> 
-                    <h6>Москва, ул. Лесная, 15</h6> 
+                    <h4>{{ route.general_end_point }}</h4> 
+                    <h6>{{ route.general_start_point }}</h6> 
+                    <p>Маршрут создан</p> 
+                    <h6>{{ route.general_end_point }}</h6> 
                 </div>
             </div>
         </div>
@@ -76,6 +59,7 @@ import RouteInput from "@/components/RouteBuilder/RouteInput.vue";
 import TransportFilters from "@/ui/TransportFilters.vue";
 import collapsible from "@/ui/v-collapsible.vue";
 import axios from 'axios';
+import { getCSRFToken } from '@/utils/csrf';
 
 export default {
     name: "RouteBuilder",
@@ -86,10 +70,10 @@ export default {
     },
     data() {
         return {
-        from: "",
-        to: "",
-        routes: [],
-        error: "",
+            from: "",
+            to: "",
+            routes: [],
+            error: "",
         };
     },
     methods: {
@@ -101,21 +85,38 @@ export default {
 
             this.error = ""; // Сбрасываем предыдущие ошибки
             try {
-                // Отправляем запрос на сервер с любым текстом
-                const response = await axios.post('/api/routes/', {
-                    from: this.from,
-                    to: this.to,
-                });
+                const csrfToken = getCSRFToken();
+                const response = await axios.post(
+                    '/api/routes/',
+                    {
+                        from: this.from,
+                        to: this.to,
+                    },
+                    {
+                        headers: {
+                            'X-CSRFToken': csrfToken
+                        }
+                    }
+                );
 
-                if (response.data.routes) {
-                    this.routes = response.data.routes;  // Получаем маршруты
+                if (response.data.route) {
+                    this.routes.push(response.data.route); // Добавляем новый маршрут в список
                 } else {
-                    this.error = "Маршруты не найдены!";
+                    this.error = "Маршрут не создан!";
                 }
             } catch (err) {
-                console.error("Ошибка при получении маршрутов:", err);
-                this.error = "Ошибка связи с сервером. Попробуйте позже.";
+                console.error("Ошибка при создании маршрута:", err);
+                if (err.response && err.response.status === 401) {
+                    this.error = "Требуется авторизация. Пожалуйста, войдите в систему.";
+                } else if (err.response && err.response.data.error) {
+                    this.error = err.response.data.error;
+                } else {
+                    this.error = "Ошибка связи с сервером. Попробуйте позже.";
+                }
             }
+        },
+        swapPoints() {
+            [this.from, this.to] = [this.to, this.from]; // Обмен местами
         }
     }
 }

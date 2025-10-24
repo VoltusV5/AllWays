@@ -1,8 +1,7 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
+# routes/urls.py
+from django.urls import path
 from . import views
 
-router = DefaultRouter()
-router.register(r'routes', views.UserRouteViewSet)
-router.register(r'segments', views.SegmentViewSet)
-
+urlpatterns = [
+    path('', views.create_route, name='create_route'),
+]
