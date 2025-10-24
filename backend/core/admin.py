@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import User, Profile, AccountLevel, Notification, SocialLogin, LoginHistory
+from core.models import User
+from routes.models import UserRoute, Segment
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 @admin.register(User)
@@ -18,9 +19,6 @@ class CustomUserAdmin(BaseUserAdmin):
         }),
     )
 
-admin.site.register(Profile)
-admin.site.register(AccountLevel)
-admin.site.register(Notification)
-admin.site.register(SocialLogin)
-admin.site.register(LoginHistory)
+
+
 
