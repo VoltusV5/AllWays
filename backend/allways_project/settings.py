@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 # Подгружаем переменные из .env
 load_dotenv()
 
-# Указываем корень проекта (AllWays/backend)
+# Указываем корень проекта
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 ON_SERVER = 0
@@ -14,7 +14,7 @@ DEBUG = True
 
 # Конфигурация базы данных
 if ON_SERVER == "1":
-    # Если ON_SERVER=1 (продакшн), используем MySQL
+    # используем MySQL
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.mysql",
@@ -30,11 +30,11 @@ if ON_SERVER == "1":
         }
     }
 else:
-    # Если ON_SERVER=0 (локальное окружение), используем SQLite
+    # используем SQLite
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",  # Файл базы данных для локальной разработки
+            "NAME": BASE_DIR / "db.sqlite3",
         }
     }
 

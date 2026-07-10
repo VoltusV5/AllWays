@@ -38,12 +38,9 @@ export default {
     border-radius: 14px;
     width: 34px;
     height: 30px;
-    background: rgba(0, 0, 0, 0.6); /* Видимый фон */
+    background: rgba(0, 0, 0, 0.6);
     cursor: pointer;
     padding: 0;
-    /* display: flex;
-    align-items: center;
-    justify-content: center; */
 }
 
 .back-button:hover {
@@ -56,6 +53,5 @@ export default {
     width: 34px;
     height: 30px;
     object-fit: contain;
-    /* filter: brightness(0) invert(1); Делает стрелку белой */
 }
 </style>

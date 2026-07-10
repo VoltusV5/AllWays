@@ -74,34 +74,27 @@ export default {
             try {
                 if (!this.map) return;
                 
-                // Правильное удаление geoObjects
                 if (this.map.geoObjects && typeof this.map.geoObjects.removeAll === 'function') {
                     this.map.geoObjects.removeAll();
                 }
                 
-                // Правильное удаление элементов управления
                 if (this.map.controls) {
-                    // Получаем все элементы управления и удаляем их по одному
                     const controls = this.map.controls.getAll();
                     controls.forEach(control => {
                         try {
                             this.map.controls.remove(control);
                         } catch (e) {
-                            // Игнорируем ошибки при удалении контролов
                         }
                     });
                 }
                 
-                // Даем время на очистку перед разрушением
                 setTimeout(() => {
                     try {
                         if (this.map && typeof this.map.destroy === 'function') {
-                            // Самый безопасный способ - просто очищаем контейнер
                             this.map.container.destroy();
                         }
                     } catch (error) {
                         console.warn('Warning during map destruction:', error);
-                        // В крайнем случае просто очищаем HTML
                         this.forceCleanup();
                     }
                     
@@ -116,7 +109,6 @@ export default {
         },
 
         forceCleanup() {
-            // Принудительная очистка без использования API Яндекс Карт
             try {
                 if (this.$refs.mapContainer) {
                     this.$refs.mapContainer.innerHTML = '';

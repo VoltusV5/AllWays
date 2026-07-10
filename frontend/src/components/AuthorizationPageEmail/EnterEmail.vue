@@ -60,7 +60,6 @@ export default {
       this.email = "";
     },
     handleInput() {
-      // Optional: Add any input handling logic if needed
     }
   },
 };

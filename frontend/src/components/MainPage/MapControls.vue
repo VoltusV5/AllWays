@@ -28,9 +28,6 @@ export default {
 <style scoped>
   .map-controls {
     position: fixed;
-    /* right: 10px;
-    top: 45%; */
-    /* transform: translateY(-50%); */
     z-index: 10;
   }
 

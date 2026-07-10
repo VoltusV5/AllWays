@@ -24,11 +24,13 @@ lerna-debug.log*
 # Frontend
 # ======================
 node_modules/
-# dist/
+dist/
 dist-ssr/
 coverage/
 cypress/videos/
 cypress/screenshots/
+AllWays/
+AllWays.mp4
 
 
 # ======================
@@ -44,6 +46,18 @@ backend/db.sqlite3
 
 # Django локальные настройки
 myproject/settings_local.py
+
+# Django statics
+staticfiles/
+
+
+# ======================
+# Mobile / Android
+# ======================
+mobile/.gradle/
+mobile/build/
+mobile/app/build/
+mobile/local.properties
 
 
 # ======================

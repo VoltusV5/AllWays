@@ -4,21 +4,18 @@
         <h1>Маршрут</h1>
 
         <div class="route_build_menu">
-            <!-- Используем компонент для "Откуда" -->
             <RouteInput     
                 label="Откуда" 
                 placeholder="введите начальную точку маршрута" 
                 v-model="from" 
             />
 
-            <!-- Кнопка для обмена местами -->
             <div class="swap_container">
                 <button class="swap_btn" @click="swapPoints">
                     <img src="@/assets/images/swap 1.png" />
                 </button>
             </div>
 
-            <!-- Используем компонент для "Куда" -->
             <RouteInput class="last_of_input"
                 label="Куда" 
                 placeholder="введите конечную точку маршрута" 
@@ -83,7 +80,7 @@ export default {
                 return;
             }
 
-            this.error = ""; // Сбрасываем предыдущие ошибки
+            this.error = "";
             try {
                 const csrfToken = getCSRFToken();
                 const response = await axios.post(
@@ -100,7 +97,7 @@ export default {
                 );
 
                 if (response.data.route) {
-                    this.routes.push(response.data.route); // Добавляем новый маршрут в список
+                    this.routes.push(response.data.route);
                 } else {
                     this.error = "Маршрут не создан!";
                 }
@@ -116,7 +113,7 @@ export default {
             }
         },
         swapPoints() {
-            [this.from, this.to] = [this.to, this.from]; // Обмен местами
+            [this.from, this.to] = [this.to, this.from];
         }
     }
 }
@@ -187,8 +184,6 @@ h1 {
 
 
 
-/* History */
-
 .history {
     width: 100%;
 }
@@ -206,7 +201,7 @@ h3 {
 .history_element {
     display: grid;
     justify-content: center;
-    justify-items: center;   /* Центрируем по горизонтали */
+    justify-items: center;
     align-items: center; 
     grid-template-columns: 150px 50px 150px;
     grid-template-rows: 40px 20px;

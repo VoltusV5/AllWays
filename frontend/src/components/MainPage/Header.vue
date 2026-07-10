@@ -27,7 +27,6 @@
       },
       goToAuthorizationPage() {
         try {
-          // Теперь переходим на страницу ввода email
           this.$router.push('/authorization-email');
         } catch (error) {
           console.error('Navigation error:', error);

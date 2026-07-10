@@ -150,7 +150,7 @@ export default {
           username: this.login,
         }, {
           headers: {
-            'X-CSRFToken': csrfToken // Добавляем CSRF токен в заголовок
+            'X-CSRFToken': csrfToken
           }
         });
 
@@ -174,7 +174,6 @@ export default {
       this.email = "";
     },
     handleInput() {
-      // Optional: Add any input handling logic if needed
     },
     goToLogin() {
       this.$router.push('/authorization-email');

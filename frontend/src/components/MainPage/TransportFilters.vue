@@ -15,7 +15,6 @@
 </template>
 
 <script>
-  // Импортируем изображения в начале компонента
   import allFiltersIcon from '@/assets/images/icontrans.png';
   import autoIcon from '@/assets/images/auto.png';
   import busIcon from '@/assets/images/bus.png';
@@ -45,10 +44,8 @@
           if (filter.id === filterId) {
             filter.active = true;
           } else if (filterId === 'all') {
-            // При выборе "Все" деактивируем остальные
             filter.active = filter.id === 'all';
           } else {
-            // При выборе конкретного транспорта деактивируем "Все"
             if (filter.id === 'all') filter.active = false;
           }
         });

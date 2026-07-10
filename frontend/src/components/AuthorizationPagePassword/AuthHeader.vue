@@ -22,8 +22,8 @@
   flex-direction: column;
   align-items: center;
   padding: 16px;
-  position: relative; /* для абсолютного позиционирования дочерних элементов */
-  min-height: 200px; /* минимальная высота для центрирования */
+  position: relative;
+  min-height: 200px;
 }
 
 .key-image {
@@ -33,6 +33,6 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%); /* центрирует точно по середине */
+  transform: translate(-50%, -50%);
 }
 </style>
