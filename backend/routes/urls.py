@@ -1,7 +1,12 @@
-# routes/urls.py
+"""
+Маршрутизация для приложения routes.
+"""
+
 from django.urls import path
-from . import views
+
+from .views import RouteCreateAPIView
+
 
 urlpatterns = [
-    path('', views.create_route, name='create_route'),
+    path("", RouteCreateAPIView.as_view(), name="create_route"),
 ]

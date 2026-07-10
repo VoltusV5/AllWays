@@ -1,56 +1,79 @@
+"""
+Views для приложения users.
+"""
 
-from django.contrib.auth import get_user_model, authenticate, login
-from django.http import JsonResponse
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
+from django.contrib.auth import authenticate, get_user_model, login
 from rest_framework import status
-from users.serializers import UserSerializer
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from .serializers import LoginSerializer, RegisterSerializer
 
 User = get_user_model()
 
-# Регистрация пользователя
-@api_view(['POST'])
-def register_view(request):
-    if request.method == "POST":
-        email = request.data.get("email")
-        password = request.data.get("password")
-        confirmPassword = request.data.get("confirmPassword")
-        
-        if password != confirmPassword:
-            return Response({"error": "Пароли не совпадают"}, status=status.HTTP_400_BAD_REQUEST)
-        
-        if User.objects.filter(email=email).exists():
-            return Response({"error": "Email уже используется"}, status=status.HTTP_400_BAD_REQUEST)
 
-        user = User.objects.create_user(email=email, password=password)
-        return Response({"message": "Пользователь успешно зарегистрирован"}, status=status.HTTP_201_CREATED)
+class RegisterAPIView(APIView):
+    """
+    Регистрация нового пользователя.
+    """
+    permission_classes = [AllowAny]
 
-# Авторизация пользователя
-@api_view(['POST'])
-def login_view(request):
-    if request.method == "POST":
-        email = request.data.get("email")
-        password = request.data.get("password")
+    def post(self, request, *args, **kwargs):
+        serializer = RegisterSerializer(data=request.data)
         
-        if not email or not password:
-            return Response({"error": "Email и пароль обязательны"}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # Нормализация email
-        email = email.lower()
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {"message": "Пользователь успешно зарегистрирован"}, 
+                status=status.HTTP_201_CREATED
+            )
+            
+        errors = serializer.errors
+        first_error_msg = list(errors.values())[0][0] if errors else "Ошибка валидации"
+        if "error" in errors:
+            first_error_msg = errors["error"][0]
+            
+        return Response({"error": first_error_msg}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class LoginAPIView(APIView):
+    """
+    Авторизация пользователя (Session Auth).
+    """
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        serializer = LoginSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(
+                {"error": "Email и пароль обязательны"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        email = serializer.validated_data["email"].lower()
+        password = serializer.validated_data["password"]
+
         user = authenticate(request, email=email, password=password)
-        if user:
+        if user is not None:
             login(request, user)
             return Response({"message": "Успешная авторизация"}, status=status.HTTP_200_OK)
+            
         return Response({"error": "Неверный email или пароль"}, status=status.HTTP_400_BAD_REQUEST)
-    
 
-@api_view(['POST'])
-def check_email(request):
-    email = request.data.get('email')
-    if not email:
-        return JsonResponse({'error': 'Email обязателен'}, status=400)
-    # Нормализация email в нижний регистр для нечувствительного сравнения
-    email = email.lower()
-    if User.objects.filter(email__iexact=email).exists():
-        return JsonResponse({'exists': True})
-    return JsonResponse({'exists': False})
+
+class CheckEmailAPIView(APIView):
+    """
+    Проверка занят/свободен email.
+    """
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        email = request.data.get("email")
+        if not email:
+            return Response({"error": "Email обязателен"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        email = email.lower()
+        exists = User.objects.filter(email__iexact=email).exists()
+        
+        return Response({"exists": exists}, status=status.HTTP_200_OK)

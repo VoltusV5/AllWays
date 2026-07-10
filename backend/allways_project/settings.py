@@ -1,28 +1,52 @@
+"""
+Django settings for allways_project.
+"""
+
 from pathlib import Path
-import os
-from dotenv import load_dotenv
 
-# Подгружаем переменные из .env
-load_dotenv()
+import environ
 
-# Указываем корень проекта
+
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-ON_SERVER = 0
-DEBUG = True
+env = environ.Env(
+    DEBUG=(bool, False),
+    IS_PRODUCTION=(bool, False),
+)
+
+env_file = BASE_DIR / '.env'
+if env_file.exists():
+    environ.Env.read_env(env_file)
 
 
-# Конфигурация базы данных
-if ON_SERVER == "1":
-    # используем MySQL
+# ==========================================
+# 1. ОСНОВНЫЕ НАСТРОЙКИ
+# ==========================================
+
+SECRET_KEY = env('SECRET_KEY')
+
+DEBUG = env('DEBUG')
+IS_PRODUCTION = env('IS_PRODUCTION')
+
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['127.0.0.1', 'localhost'])
+
+ROOT_URLCONF = "allways_project.urls"
+WSGI_APPLICATION = "allways_project.wsgi.application"
+AUTH_USER_MODEL = 'core.User'
+
+
+# ==========================================
+# 2. БАЗА ДАННЫХ
+# ==========================================
+if IS_PRODUCTION:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.mysql",
-            "NAME": os.getenv("MYSQL_DB_NAME", "VoltusV$default"),
-            "USER": os.getenv("MYSQL_USER", "VoltusV"),
-            "PASSWORD": os.getenv("MYSQL_PASSWORD", "c~yRP6#XnE4M"),
-            "HOST": os.getenv("MYSQL_HOST", "VoltusV.mysql.pythonanywhere-services.com"),
-            "PORT": os.getenv("MYSQL_PORT", "3306"),
+            "NAME": env("MYSQL_DB_NAME"),
+            "USER": env("MYSQL_USER"),
+            "PASSWORD": env("MYSQL_PASSWORD"),
+            "HOST": env("MYSQL_HOST"),
+            "PORT": env("MYSQL_PORT", default="3306"),
             "OPTIONS": {
                 "charset": "utf8mb4",
                 "init_command": "SET sql_mode='STRICT_TRANS_TABLES'"
@@ -30,7 +54,6 @@ if ON_SERVER == "1":
         }
     }
 else:
-    # используем SQLite
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
@@ -38,22 +61,10 @@ else:
         }
     }
 
-# Секретный ключ
-SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-замени-на-ключ")
 
-# DEBUG включается только если в .env указано True
-DEBUG = os.getenv("DEBUG", "True") == "True"
-
-# Разрешённые хосты
-ALLOWED_HOSTS = [
-    '127.0.0.1',
-    'localhost',
-    'voltusv.pythonanywhere.com'
-]
-
-AUTH_USER_MODEL = 'core.User'
-
-# Установленные приложения
+# ==========================================
+# 3. ПРИЛОЖЕНИЯ И MIDDLEWARE
+# ==========================================
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -61,44 +72,14 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
+    "rest_framework",
+
     "core",
     "users",
-    'routes',
-    'rest_framework',
+    "routes",
 ]
 
-
-CSRF_COOKIE_NAME = 'csrftoken'  # Имя cookie для CSRF токена
-CSRF_TRUSTED_ORIGINS = [
-    'https://yourdomain.com',   # Ваш домен
-    'http://localhost:8080',    # Для локальной разработки
-]
-
-AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',  # Стандартный бэкенд
-]
-
-# Настройки статических файлов
-STATIC_URL = "/static/"
-
-if ON_SERVER:
-    # Настройки для сервера (например, использование `collectstatic`)
-    STATIC_ROOT = BASE_DIR / "staticfiles"  # collectstatic собирает сюда
-    STATICFILES_DIRS = [
-        BASE_DIR / "backend" / "static",  # свои css/js
-        BASE_DIR / "backend" / "frontend" / "dist" / "assets",  # Vue ассеты
-    ]
-    VUE_DIST_DIR = BASE_DIR / "backend" / "frontend" / "dist"
-else:
-    # Настройки для локальной разработки (без использования `collectstatic`)
-    STATICFILES_DIRS = [
-        BASE_DIR / "frontend" / "dist",  # Папка, где лежат скомпилированные файлы фронтенда
-    ]
-    STATIC_ROOT = BASE_DIR / "staticfiles"
-
-VUE_DIST_DIR = BASE_DIR / "backend" / "frontend" / "dist"
-
-# Простейшая конфигурация middleware (нужна для работы админки)
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -106,14 +87,32 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-# Корень URL
-ROOT_URLCONF = "allways_project.urls"
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 
-# Шаблоны (можно минимально)
+# ==========================================
+# 4. СТАТИКА И ШАБЛОНЫ
+# ==========================================
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+if IS_PRODUCTION:
+    STATICFILES_DIRS = [
+        BASE_DIR / "backend" / "static",
+        BASE_DIR / "backend" / "frontend" / "dist" / "assets",
+    ]
+else:
+    STATICFILES_DIRS = [
+        BASE_DIR / "frontend" / "dist",
+    ]
+
+VUE_DIST_DIR = BASE_DIR / "backend" / "frontend" / "dist"
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -130,5 +129,46 @@ TEMPLATES = [
     },
 ]
 
-# WSGI
-WSGI_APPLICATION = "allways_project.wsgi.application"
+
+# ==========================================
+# 5. БЕЗОПАСНОСТЬ
+# ==========================================
+CSRF_COOKIE_NAME = 'csrftoken'
+CSRF_TRUSTED_ORIGINS = env.list(
+    'CSRF_TRUSTED_ORIGINS',
+    default=['http://localhost:8080', 'http://127.0.0.1:8080']
+)
+
+
+# ==========================================
+# 6. ЛОГИРОВАНИЕ
+# ==========================================
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+        },
+        "file": {
+            "class": "logging.FileHandler",
+            "filename": BASE_DIR / "backend" / "django.log",
+            "formatter": "verbose",
+        },
+    },
+    "root": {
+        "handlers": ["console", "file"] if IS_PRODUCTION else ["console"],
+        "level": env("LOG_LEVEL", default="INFO"),
+    },
+}

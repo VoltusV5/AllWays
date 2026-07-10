@@ -1,21 +1,34 @@
-from django.views.generic import View
-from django.http import HttpResponse
+"""
+Views для приложения core.
+"""
+
+import logging
+
 from django.conf import settings
-import os
+from django.http import HttpResponse
+from django.views.generic import View
+
+
+logger = logging.getLogger(__name__)
+
 
 class FrontendAppView(View):
-    def get(self, request):
+    """
+    Отдает index.html собранного Vue.js приложения.
+    Используется для передачи управления клиентскому роутеру.
+    """
+
+    def get(self, request, *args, **kwargs):
+
+        index_file_path = settings.VUE_DIST_DIR / "index.html"
+
         try:
-            # Путь к файлу index.html после сборки Vue
-            index_file_path = os.path.join(settings.VUE_DIST_DIR, 'index.html')
-
-            # Чтение содержимого файла
-            with open(index_file_path, 'r') as file:
-                content = file.read()
-
-            # Возвращаем файл как HTTP Response
+            content = index_file_path.read_text(encoding="utf-8")
             return HttpResponse(content)
-
+            
         except FileNotFoundError:
-            return HttpResponse("Frontend build not found. Please build your Vue app.", status=500)
-
+            logger.error(f"Frontend build not found at {index_file_path}")
+            return HttpResponse(
+                "Frontend build not found. Please run 'npm run build' in your Vue app.", 
+                status=501
+            )

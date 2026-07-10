@@ -1,9 +1,14 @@
+"""
+Маршрутизация для приложения users.
+"""
 
 from django.urls import path
-from . import views
+
+from .views import CheckEmailAPIView, LoginAPIView, RegisterAPIView
+
 
 urlpatterns = [
-    path('register/', views.register_view, name='register'),
-    path('login/', views.login_view, name='login'),
-    path('check-email/', views.check_email, name='check_email'),
+    path("register/", RegisterAPIView.as_view(), name="register"),
+    path("login/", LoginAPIView.as_view(), name="login"),
+    path("check-email/", CheckEmailAPIView.as_view(), name="check_email"),
 ]
